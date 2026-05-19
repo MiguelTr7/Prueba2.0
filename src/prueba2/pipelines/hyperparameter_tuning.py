@@ -9,12 +9,15 @@ Modulo: src/prueba/hyperparameter_tuning.py
 Proyecto: Prediccion de desempeno de empleados
 """
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import (
     f1_score, mean_squared_error, classification_report
@@ -136,6 +139,86 @@ def optimizar_gridsearch_reg(
     print(f"Mejor RMSE CV: {abs(grid.best_score_):.4f}")
 
     return grid
+
+
+def optimizar_randomizedsearch_clf(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    preprocesador,
+    cv: int = 3,
+    n_iter: int = 15
+) -> RandomizedSearchCV:
+    """
+    Aplica RandomizedSearchCV sobre RandomForestClassifier.
+    """
+    pipeline = Pipeline([
+        ('preprocesamiento', preprocesador),
+        ('modelo', RandomForestClassifier(random_state=42))
+    ])
+
+    param_distributions = {
+        'modelo__n_estimators':     [100, 150, 200, 250, 300],
+        'modelo__max_depth':        [4, 6, 8, 10, 12],
+        'modelo__min_samples_split': [2, 3, 5, 7],
+        'modelo__min_samples_leaf':  [1, 2, 3, 4]
+    }
+
+    search = RandomizedSearchCV(
+        estimator=pipeline,
+        param_distributions=param_distributions,
+        n_iter=n_iter,
+        cv=cv,
+        scoring='f1',
+        n_jobs=-1,
+        random_state=42
+    )
+    search.fit(X_train, y_train)
+
+    print("RandomizedSearchCV Clasificacion — Mejores parametros:")
+    print(search.best_params_)
+    print(f"Mejor F1 CV: {search.best_score_:.4f}")
+
+    return search
+
+
+def optimizar_randomizedsearch_reg(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    preprocesador,
+    cv: int = 3,
+    n_iter: int = 15
+) -> RandomizedSearchCV:
+    """
+    Aplica RandomizedSearchCV sobre RandomForestRegressor.
+    """
+    pipeline = Pipeline([
+        ('preprocesamiento', preprocesador),
+        ('modelo', RandomForestRegressor(random_state=42))
+    ])
+
+    param_distributions = {
+        'modelo__n_estimators':     [100, 150, 200, 250, 300],
+        'modelo__max_depth':        [4, 6, 8, 10, 12],
+        'modelo__min_samples_split': [2, 3, 5, 7],
+        'modelo__min_samples_leaf':  [1, 2, 3, 4]
+    }
+
+    search = RandomizedSearchCV(
+        estimator=pipeline,
+        param_distributions=param_distributions,
+        n_iter=n_iter,
+        cv=cv,
+        scoring='neg_root_mean_squared_error',
+        n_jobs=-1,
+        random_state=42
+    )
+    search.fit(X_train, y_train)
+
+    print("RandomizedSearchCV Regresion — Mejores parametros:")
+    print(search.best_params_)
+    print(f"Mejor RMSE CV: {abs(search.best_score_):.4f}")
+
+    return search
 
 
 # ------------------------------------------------------------------------------
@@ -278,6 +361,16 @@ def optimizar_optuna_reg(
 
     return study, pipeline_optuna
 
+def exportar_resultados_tuning(resultados: dict, ruta_salida: str) -> str:
+    """
+    Guarda los resultados de la busqueda de hiperparametros en un JSON.
+    """
+    ruta = Path(ruta_salida)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    with ruta.open('w', encoding='utf-8') as archivo:
+        json.dump(resultados, archivo, indent=2, ensure_ascii=False, default=str)
+    print(f"Resultados de tuning guardados en: {ruta}")
+    return str(ruta)
 
 # ------------------------------------------------------------------------------
 # AJUSTE DE UMBRAL

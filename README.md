@@ -29,11 +29,21 @@ pip install -r requirements.txt
 
 ## How to run your Kedro pipeline
 
-You can run your Kedro project with:
+The project includes a default data science workflow that executes preprocessing, training, tuning, evaluation, and optional unsupervised analysis.
+
+Run the full workflow with:
 
 ```
 kedro run
 ```
+
+Run only the unsupervised analysis pipeline with:
+
+```
+kedro run --pipeline unsupervised
+```
+
+Modeling metrics and tuning summaries are exported to `data/08_reporting/` when the evaluation and tuning pipelines complete.
 
 ## How to test your Kedro project
 

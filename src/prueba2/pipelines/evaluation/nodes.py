@@ -1,8 +1,11 @@
 """Nodes for the evaluation pipeline."""
 
+from pathlib import Path
+
 from ..model_evaluation import (
     evaluar_clasificacion,
     evaluar_regresion,
+    exportar_metricas_json,
 )
 
 
@@ -18,6 +21,11 @@ def evaluate_classifier_models(pipelines_clf, X_test_clf, y_test_clf):
                 mostrar_matriz=False,
             )
         )
+
+    exportar_metricas_json(
+        resultados,
+        Path('data') / '08_reporting' / 'metricas_clasificacion.json',
+    )
     return resultados
 
 
@@ -31,4 +39,9 @@ def evaluate_regressor_models(pipelines_reg, X_test_reg, y_test_reg):
             y_test_reg,
         )
         resultados.append(resultado)
+
+    exportar_metricas_json(
+        resultados,
+        Path('data') / '08_reporting' / 'metricas_regresion.json',
+    )
     return resultados

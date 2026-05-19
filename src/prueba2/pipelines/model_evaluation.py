@@ -7,6 +7,9 @@ Modulo: src/prueba/model_evaluation.py
 Proyecto: Prediccion de desempeno de empleados
 """
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -243,6 +246,18 @@ def comparar_regresores(
 
     plt.show()
     return tabla
+
+
+def exportar_metricas_json(resultados: list, ruta_salida: str) -> str:
+    """
+    Guarda una lista de resultados en formato JSON.
+    """
+    ruta = Path(ruta_salida)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    with ruta.open('w', encoding='utf-8') as archivo:
+        json.dump(resultados, archivo, indent=2, ensure_ascii=False, default=str)
+    print(f'Métricas exportadas en: {ruta}')
+    return str(ruta)
 
 
 # ------------------------------------------------------------------------------

@@ -1,25 +1,27 @@
 """
-This module contains example tests for a Kedro project.
-Tests should be placed in ``src/tests``, in modules that mirror your
-project's structure, and in files named test_*.py.
+Project tests for the Kedro pipeline registry and discovered workflows.
 """
-import pytest
 from pathlib import Path
-from kedro.framework.session import KedroSession
+
+import pytest
 from kedro.framework.startup import bootstrap_project
 
-# The tests below are here for the demonstration purpose
-# and should be replaced with the ones testing the project
-# functionality
+from src.prueba2.pipeline_registry import register_pipelines
 
-class TestKedroRun:
-    def test_kedro_run_no_pipeline(self):
-    # This example test expects a pipeline run failure, since
-    # the default project template contains no pipelines.
+
+class TestKedroPipelines:
+    def test_default_pipeline_is_registered(self):
         bootstrap_project(Path.cwd())
+        pipelines = register_pipelines()
 
-        with pytest.raises(Exception) as excinfo:
-            with KedroSession.create(project_path=Path.cwd()) as session:
-                session.run()
+        assert 'data_science' in pipelines
+        assert '__default__' in pipelines
+        assert pipelines['__default__'] is pipelines['data_science']
+        assert len(pipelines['__default__'].nodes) > 0
 
-        assert "Pipeline contains no nodes" in str(excinfo.value)
+    def test_unsupervised_pipeline_is_available(self):
+        bootstrap_project(Path.cwd())
+        pipelines = register_pipelines()
+
+        assert 'unsupervised' in pipelines
+        assert len(pipelines['unsupervised'].nodes) >= 2
