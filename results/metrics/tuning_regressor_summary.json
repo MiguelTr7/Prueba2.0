@@ -1,0 +1,29 @@
+{
+  "grid": {
+    "best_params": {
+      "modelo__max_depth": 10,
+      "modelo__min_samples_leaf": 1,
+      "modelo__min_samples_split": 2,
+      "modelo__n_estimators": 200
+    },
+    "best_score": 1.293446934793229
+  },
+  "randomized": {
+    "best_params": {
+      "modelo__n_estimators": 300,
+      "modelo__min_samples_split": 3,
+      "modelo__min_samples_leaf": 1,
+      "modelo__max_depth": 12
+    },
+    "best_score": 1.2917930189200366
+  },
+  "optuna": {
+    "best_params": {
+      "n_estimators": 154,
+      "max_depth": 14,
+      "min_samples_split": 9,
+      "min_samples_leaf": 1
+    },
+    "best_value": 1.2503492554910605
+  }
+}

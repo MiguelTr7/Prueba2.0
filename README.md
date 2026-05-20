@@ -1,111 +1,189 @@
-# Prueba2
+# Sistema de Análisis y Predicción de Desempeño de Empleados
 
-[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
+**Asignatura:** SCY1101 — Programación para la Ciencia de Datos  
+**Evaluación:** Parcial N°2  
+**Integrantes:** Arturo  
 
-## Overview
+---
 
-This is your new Kedro project, which was generated using `kedro 1.3.1`.
+## Descripción del proyecto
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
+Proyecto de Machine Learning aplicado a Recursos Humanos. Se desarrolló un sistema completo de análisis y predicción de desempeño de empleados utilizando datos históricos de ausencias, capacitaciones, evaluaciones y competencias.
 
-## Rules and guidelines
+**Objetivos:**
+- Predecir empleados de alto desempeño (clasificación binaria).
+- Estimar el puntaje numérico de desempeño (regresión).
+- Segmentar empleados en perfiles para intervenciones diferenciadas (clustering).
 
-In order to get the best out of the template:
+---
 
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a data engineering convention
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
-
-## How to install dependencies
-
-Declare any dependencies in `requirements.txt` for `pip` installation.
-
-To install them, run:
+## Estructura del proyecto
 
 ```
+prueba2/
+│
+├── notebooks/
+│   ├── 00_data_cleaning_feature_engineering.ipynb  ← Limpieza y FE
+│   ├── 01_business_context_and_eda.ipynb           ← EDA y contexto de negocio
+│   ├── 02_target_selection_and_problem_definition.ipynb
+│   ├── 03_supervised_modeling.ipynb                ← Modelos supervisados
+│   ├── 04_hyperparameter_optimization.ipynb        ← GridSearchCV + RandomizedSearchCV + Optuna
+│   ├── 05_unsupervised_learning.ipynb              ← PCA + KMeans
+│   ├── 06_final_conclusions.ipynb
+│   └── 07_project_summary_for_presentation_PRO.ipynb
+│
+├── src/
+│   ├── data_preprocessing.py    ← Limpieza, FE, preprocesador sklearn
+│   ├── model_training.py        ← Definición y entrenamiento de modelos
+│   ├── model_evaluation.py      ← Métricas y comparación de modelos
+│   └── hyperparameter_tuning.py ← GridSearchCV, RandomizedSearchCV, Optuna
+│
+├── data/
+│   ├── 01_raw/                  ← Datos originales (empleados, ausencias, etc.)
+│   ├── 05_model_input/          ← dataset_rrhh_limpio.csv
+│   └── 06_models/               ← Modelos serializados (.pkl)
+│
+├── models/
+│   └── trained_models/          ← Copia de modelos finales para entrega
+│       ├── modelo_clasificacion_final.pkl
+│       └── modelo_regresion_final.pkl
+│
+├── results/
+│   ├── plots/                   ← Gráficos generados por los notebooks
+│   ├── metrics/                 ← Métricas exportadas en JSON
+│   └── reports/                 ← Informes técnicos
+│
+└── requirements.txt             ← Dependencias del proyecto
+```
+
+---
+
+## Instalación y dependencias
+
+**Requisito previo:** Python 3.12
+
+### Opción 1 — entorno virtual con pip
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# Linux/Mac
+source .venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-## How to run your Kedro pipeline
+### Opción 2 — uv (más rápido)
 
-The project includes a default data science workflow that executes preprocessing, training, tuning, evaluation, and optional unsupervised analysis.
-
-Run the full workflow with:
-
-```
-kedro run
+```bash
+uv sync
 ```
 
-Run only the unsupervised analysis pipeline with:
+### Dependencias principales
+
+| Librería | Versión | Uso |
+|---|---|---|
+| scikit-learn | ≥1.4 | Modelos, pipelines, métricas |
+| pandas | ≥2.0 | Manipulación de datos |
+| numpy | ≥1.26 | Operaciones numéricas |
+| matplotlib / seaborn | ≥3.8 | Visualizaciones |
+| xgboost | ≥2.0 | XGBoost Classifier/Regressor |
+| lightgbm | ≥4.0 | LightGBM Classifier/Regressor |
+| optuna | ≥3.0 | Optimización bayesiana de hiperparámetros |
+| scipy | ≥1.11 | Distribuciones para RandomizedSearchCV |
+| joblib | ≥1.3 | Serialización de modelos |
+| jupyter / jupyterlab | — | Ejecución de notebooks |
+
+---
+
+## Orden de ejecución de notebooks
+
+Ejecutar en orden para reproducir todos los resultados:
 
 ```
-kedro run --pipeline unsupervised
+1. 00_data_cleaning_feature_engineering.ipynb
+2. 01_business_context_and_eda.ipynb
+3. 02_target_selection_and_problem_definition.ipynb
+4. 03_supervised_modeling.ipynb
+5. 04_hyperparameter_optimization.ipynb   ← genera modelos finales .pkl
+6. 05_unsupervised_learning.ipynb
+7. 06_final_conclusions.ipynb
+8. 07_project_summary_for_presentation_PRO.ipynb
 ```
 
-Modeling metrics and tuning summaries are exported to `data/08_reporting/` when the evaluation and tuning pipelines complete.
+> **Nota:** El notebook 04 es el más costoso computacionalmente (~15 min).  
+> Genera `models/trained_models/modelo_clasificacion_final.pkl` y `modelo_regresion_final.pkl`.
 
-## How to test your Kedro project
+---
 
-Have a look at the file `tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
+## Uso de los módulos src/
 
-```
-pytest
-```
+Los módulos pueden importarse directamente desde Python:
 
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+```python
+import sys
+sys.path.insert(0, 'src')
 
+from data_preprocessing import cargar_dataset, crear_features_derivadas, crear_preprocesador
+from model_training import obtener_modelos_clasificacion, entrenar_todos
+from model_evaluation import comparar_clasificadores, graficar_comparacion_clf
+from hyperparameter_tuning import tune_grid_search_clf, tune_random_search_clf, tune_optuna_clf
 
-## Project dependencies
+# Cargar y preparar datos
+df = cargar_dataset(r'C:\Users\Arturo\prueba2')
+df = crear_features_derivadas(df)
 
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
-
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
-
-## How to work with Kedro and notebooks
-
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, 'session', `catalog`, and `pipelines`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
-
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
-
-```
-pip install jupyter
-```
-
-After installing Jupyter, you can start a local notebook server:
-
-```
-kedro jupyter notebook
+# Entrenar y comparar modelos
+from sklearn.model_selection import train_test_split
+X = df[obtener_variables_modelo(df)]
+y = df['desempeno_alto']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+                                                     random_state=42, stratify=y)
+modelos = obtener_modelos_clasificacion()
+pipelines = entrenar_todos(modelos, X_train, y_train)
+tabla = comparar_clasificadores(pipelines, X_test, y_test)
+print(tabla)
 ```
 
-### JupyterLab
-To use JupyterLab, you need to install it:
+---
 
-```
-pip install jupyterlab
-```
+## Resultados principales
 
-You can also start JupyterLab:
+### Clasificación — `desempeno_alto` (P75 = 5.60)
 
-```
-kedro jupyter lab
-```
+| Modelo | F1-score | Balanced Acc. | Recall |
+|---|---|---|---|
+| RF GridSearchCV | **0.713** | 0.816 | 0.782 |
+| RF RandomizedSearchCV | ~0.710 | ~0.810 | ~0.77 |
+| RF Base | 0.675 | 0.785 | 0.731 |
 
-### IPython
-And if you want to run an IPython session:
+### Regresión — `puntaje_desempeno`
 
-```
-kedro ipython
-```
+| Modelo | RMSE | R² |
+|---|---|---|
+| RF Base | **1.141** | **0.669** |
+| RF GridSearchCV | 1.143 | 0.668 |
 
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
+### Clustering
 
-> *Note:* Your output cells will be retained locally.
+- **PCA:** 55.65% varianza en 2 componentes (PC1: capacitación, PC2: ausencias).
+- **KMeans K=4:** 4 perfiles de empleados (sin_cap+riesgo, sin_cap+estable, con_cap+alto, con_cap+desarrollo).
 
-## Package your Kedro project
+---
 
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/deploy/package_a_project/#package-an-entire-kedro-project)
+## Hallazgos clave
+
+1. **Sesgo del evaluador domina ~60% de la varianza** — `evaluador_media` es la variable más importante.
+2. **Lag feature `prev_puntaje`** (correlación 0.47) — mayor predictor individual.
+3. **K=2 trivial en clustering** — Silhouette óptimo era K=2 por `sin_capacitacion` binaria; se usó K≥4.
+4. **Data leakage corregido en Optuna** — CV solo sobre train, test set reservado para evaluación final.
+
+---
+
+## Reproducibilidad
+
+- Todas las semillas fijadas con `random_state=42`.
+- Dataset original en `data/01_raw/` (no versionado en git).
+- Dataset limpio reproducible ejecutando notebook 00.
+- Modelos finales en `models/trained_models/`.

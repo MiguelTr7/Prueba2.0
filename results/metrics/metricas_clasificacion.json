@@ -1,0 +1,58 @@
+[
+  {
+    "modelo": "Logistic Regression",
+    "accuracy": 0.7517241379310344,
+    "balanced_accuracy": 0.7499048344118766,
+    "precision": 0.7209302325581395,
+    "recall": 0.8378378378378378,
+    "f1_score": 0.775
+  },
+  {
+    "modelo": "Decision Tree",
+    "accuracy": 0.7448275862068966,
+    "balanced_accuracy": 0.7437190711838599,
+    "precision": 0.7283950617283951,
+    "recall": 0.7972972972972973,
+    "f1_score": 0.7612903225806451
+  },
+  {
+    "modelo": "Random Forest",
+    "accuracy": 0.7586206896551724,
+    "balanced_accuracy": 0.7580890749904834,
+    "precision": 0.7532467532467533,
+    "recall": 0.7837837837837838,
+    "f1_score": 0.7682119205298014
+  },
+  {
+    "modelo": "KNN",
+    "accuracy": 0.7379310344827587,
+    "balanced_accuracy": 0.7372478111914731,
+    "precision": 0.7307692307692307,
+    "recall": 0.7702702702702703,
+    "f1_score": 0.75
+  },
+  {
+    "modelo": "SVM",
+    "accuracy": 0.7655172413793103,
+    "balanced_accuracy": 0.7634183479253902,
+    "precision": 0.7272727272727273,
+    "recall": 0.8648648648648649,
+    "f1_score": 0.7901234567901234
+  },
+  {
+    "modelo": "Gaussian NB",
+    "accuracy": 0.7206896551724138,
+    "balanced_accuracy": 0.7202131709173962,
+    "precision": 0.7189542483660131,
+    "recall": 0.7432432432432432,
+    "f1_score": 0.7308970099667774
+  },
+  {
+    "modelo": "Gradient Boosting",
+    "accuracy": 0.7724137931034483,
+    "balanced_accuracy": 0.771745336886182,
+    "precision": 0.7628205128205128,
+    "recall": 0.8040540540540541,
+    "f1_score": 0.7828947368421053
+  }
+]
