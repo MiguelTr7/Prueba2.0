@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash('C:\\\\Users\\\\Arturo\\\\prueba2\\\\.venv\\\\Scripts\\\\python.exe' -c ' *)"
+    ]
+  }
+}
